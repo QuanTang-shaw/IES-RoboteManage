@@ -2,6 +2,7 @@
 	<Table border :columns="orderColumns" :data="orderData"></Table>
 </template>
 <script>
+	import {orderList} from '@/api/getData'
 	export default {
         data () {
             return {
@@ -26,7 +27,7 @@
                         key: 'createDate'
                     },
                     {
-                        title: '订单详情',
+                        title: '订单备注',
                         key: 'orderDesc'
                     },
                     {
@@ -66,7 +67,7 @@
                     }
                 ],
                 orderData: [
-                    {
+                   /* {
                         orderNumber: 'RB05-20170511',
                         customer: '比亚迪',
                         status: '已出货',
@@ -135,7 +136,7 @@
                         status: '已出货',
                         createDate:'2017-04-01',
                         orderDesc:'比亚迪订单'
-                    }
+                    }*/
                 ]
             }
         },
@@ -148,7 +149,34 @@
 	        },
 	        remove (index) {
 	            this.orderData.splice(index, 1);
+	        },
+	        async initData(){
+		    	let list=await orderList({
+		    		nPageIndex : 0,
+    		        nPageSize : 10,
+    		        strKeyWord : ""
+		    	});
+		    	console.log(list);
+		    	if(list.obj.hasOwnProperty('objectlist')){
+		    		list.obj.objectlist.forEach((ele, index)=>{
+		    			let obj={};
+		    			/*orderNumber: 'RB05-20170511',
+                        customer: '比亚迪',
+                        status: '已出货',
+                        createDate:'2017-04-01',
+                        orderDesc:'比亚迪订单'*/
+		    			obj.orderNumber=ele.strOrderGUID;
+		    			obj.customer=ele.strCustomerName;
+		    			obj.status=ele.nOrderStatus;
+		    			obj.createDate=ele.dtOrderCreateDateTime;
+		    			obj.orderDesc=ele.strOrderNote;
+		    			this.orderData.push(obj);
+		    		});
+		    	}
 	        }
+	    },
+	    created(){
+	    	this.initData();
 	    }
     }
 </script>

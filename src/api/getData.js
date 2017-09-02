@@ -41,11 +41,12 @@
 
 	export const MachineList = async  function (obj){
 		var result = await get(
-	      "device/Handler_OrderMachineEx_V1.ashx",
-	      "order_machine_list",
+	      "device/Handler_UserMachineEx_V1.ashx",
+	      "user_machine_list",
 	      obj);
 		 return result;
 	}
+
 
 	export const  CustomerList = async function(obj){
 		var result = await get(
@@ -69,6 +70,16 @@
 		var result = await get(
           "customer/Handler_Customer_V1.ashx",
           "user_customer_update",
+          obj);
+		 return result;
+	}
+
+
+
+	export const  orderList = async function(obj){
+		var result = await get(
+          "order/Handler_Order_V1.ashx",
+          "order_list_page",
           obj);
 		 return result;
 	}

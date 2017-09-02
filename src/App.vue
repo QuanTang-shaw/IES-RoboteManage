@@ -81,14 +81,15 @@
                     </Row>
                 </div> -->
                 <div class="layout-breadcrumb">
-                    <Breadcrumb>
-                        <!-- <Breadcrumb-item href="#">首页</Breadcrumb-item> -->
+                    <!-- <Breadcrumb>
+                        <Breadcrumb-item href="#">首页</Breadcrumb-item>
                         <Breadcrumb-item href="#">{{BreadcrumbText}}</Breadcrumb-item>
                         <Breadcrumb-item>{{SubBreadcrumbText}}</Breadcrumb-item>
-                    </Breadcrumb>
+                    </Breadcrumb> -->
                 </div>
                 <div class="layout-content">
                     <div class="layout-content-main">
+                        <div style="border-bottom:solid 1px #DCD9D9;padding:10px 0;margin-bottom:15px;">{{SubBreadcrumbText}}</div>
                         <router-view class="viewTwo"></router-view>
                     </div>
                 </div>
@@ -107,7 +108,7 @@
                 routerMenu:{
                     factoryDevManage:[
                       {
-                        path:'/',
+                        path:'/DevList',
                         text:'机器列表',
                         isActive:false
                       },
@@ -181,7 +182,7 @@
         overflow: visible;
     }
     .layout-content-main{
-        padding: 25px 10px 25px;
+        padding: 0px 10px 25px;
         font-size:20px;
         min-height: 590px;
     }
