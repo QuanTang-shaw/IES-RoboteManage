@@ -1,11 +1,37 @@
 <template>
-	<Table border :columns="orderColumns" :data="orderData"></Table>
+	<div>
+		<Modal
+	        v-model="modal1"
+	        title="普通的Modal对话框标题"
+	        @on-ok="ok"
+	        @on-cancel="cancel">
+	        <p>对话框内容</p>
+	        <p>对话框内容</p>
+	        <p>对话框内容</p>
+	    </Modal>
+		<div style="margin-bottom:20px;">
+			<Row type="flex" justify="space-around">
+		        <Col span="15">
+					<Button class="addWorkshop" type="primary" icon="plus-round" @click="addOrder">添加订单</Button>
+		        </Col>
+		        <Col span="4">
+		        	<Input v-model="searchTxt"  placeholder="请输入..."></Input>
+		        </Col>
+		        <Col span="2">
+					<Button type="ghost" shape="circle" icon="ios-search">搜索</Button>
+		        </Col>
+			</Row>
+		</div>
+		<Table border :columns="orderColumns" :data="orderData"></Table>
+	</div>
 </template>
 <script>
 	import {orderList} from '@/api/getData'
 	export default {
         data () {
             return {
+            	modal1:false,
+            	searchTxt:'',
                 orderColumns: [
                     {
                         title: '订单号',
@@ -15,12 +41,13 @@
                         title: '订单客户',
                         key: 'customer'
                     },
-                    {
+                    /*{
                 		title:'图片'
-                	},
+                	},*/
                     {
                         title: '订单状态',
-                        key: 'status'
+                        key: 'status',
+                        width:120
                     },
                     {
                         title: '订单创建时间',
@@ -33,7 +60,7 @@
                     {
                         title: '操作',
                         key: 'action',
-                        width: 150,
+                        width: 250,
                         align: 'center',
                         render: (h, params) => {
                             return h('div', [
@@ -47,7 +74,8 @@
                                     },
                                     on: {
                                         click: () => {
-                                            this.show(params.index)
+                                            // this.show(params.index);
+                                            this.orderDetail(params);
                                         }
                                     }
                                 }, '查看'),
@@ -149,6 +177,13 @@
 	        },
 	        remove (index) {
 	            this.orderData.splice(index, 1);
+	        },
+	        addOrder(){
+	        	this.modal1=true;
+	        },
+	        orderDetail(params){
+	        	console.log(params);
+	        	this.$router.push('orderDetail')
 	        },
 	        async initData(){
 		    	let list=await orderList({

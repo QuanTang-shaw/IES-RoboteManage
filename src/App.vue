@@ -118,7 +118,7 @@
                         isActive:false
                       },
                       {
-                        path:'/orderList',
+                        path:'/orderManage/orderList',
                         text:'订单列表',
                         isActive:false
                       },

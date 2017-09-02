@@ -48,6 +48,15 @@
 	}
 
 
+	export const orderMachineList = async  function (obj){
+		var result = await get(
+	      "device/Handler_OrderMachineEx_V1.ashx",
+	      "order_machine_list",
+	      obj);
+		 return result;
+	}
+
+
 	export const  CustomerList = async function(obj){
 		var result = await get(
           "customer/Handler_Customer_V1.ashx",
