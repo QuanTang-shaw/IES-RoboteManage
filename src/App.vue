@@ -123,6 +123,11 @@
                         isActive:false
                       },
                       {
+                        path:'/mapNav',
+                        text:'设备地图',
+                        isActive:false
+                      },
+                      {
                         path:'/userInfo',
                         text:'用户信息',
                         isActive:false

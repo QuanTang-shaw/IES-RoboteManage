@@ -60,7 +60,7 @@
 			</Row>
 		</div>
 		<div class="customerList">
-		    <Table border :columns="columns7" :data="data6"></Table>
+		    <Table border :columns="customerColumns" :data="computedList"></Table>
 		</div>
 		<div class="page">
 			<Page
@@ -90,7 +90,7 @@
 			    currentPage:0,
 			    modal1:false,
 			    modal2:false,
-			    columns7: [
+			    customerColumns: [
 			                {
 			                     type: 'selection',
 			                     width: 60,
@@ -154,7 +154,14 @@
 		                                    },
 		                                    on: {
 		                                        click: () => {
-		                                            this.customeModify(params);
+		                                            // this.customeModify(params);
+		                                            this.modal2=true;
+		                                            this.operatingCustomer=params;
+		                                            this.formValidate.name=params.row.name;
+		                                            this.formValidate.enName=params.row.EnglishName;
+		                                            this.formValidate.contact=params.row.contact;
+		                                            this.formValidate.mail=params.row.mail;
+		                                            this.formValidate.address=params.row.address;
 		                                        }
 		                                    }
 		                                }, '修改'),
@@ -167,7 +174,10 @@
 		                                    },
 		                                    on: {
 		                                        click: () => {
-		                                            this.customeDelete(params);
+		                                            // this.customeDelete(params);
+		                                            this.modal1=true;
+		                                            this.operatingCustomer=params;
+		                                            this.deletePopContent=params.row.name;
 		                                        }
 		                                    }
 		                                }, '删除')
@@ -175,7 +185,7 @@
 		                        }
 			                }
 			    ],
-			    data6: [],
+			    customerData: [],
 			    formValidate: {
 			      name: '',
 			      enName:'',
@@ -254,97 +264,79 @@
             },
             addCustomer(){
             	this.modal2=true;
-            	// console.log(typeof this.formValidate)
             	if(typeof this.formValidate=='object'){
 	            	for (let item in this.formValidate) {
-	            		// statement
 	            		this.formValidate[item]='';
 	            	}
             	}
             },
-            customeDelete(prop){
-            	this.operatingCustomer=prop;
-            	console.log(prop);
-            	this.modal1=true;
-            	this.deletePopContent=prop.row.name;
-            },
-            customeModify(prop){
-            	this.operatingCustomer=prop;
-            	this.modal2=true;
-            	this.formValidate.name=prop.row.name;
-            	this.formValidate.enName=prop.row.EnglishName;
-            	this.formValidate.contact=prop.row.contact;
-            	this.formValidate.mail=prop.row.mail;
-            	this.formValidate.address=prop.row.address;
-            },
-			async togglePage(index) {
-				this.data6=[];
-			    this.currentPage=index-1;
-				const list=await CustomerList({
-						nPageIndex: this.currentPage,
-						nPageSize: this.pageSize,
-						strKeyWord: ""
-					});
-				list.obj.objectlist.forEach((ele,index)=>{
-				  let obj={};
-				  obj.pic=ele.strCustomerLogo;
-			      obj.name=ele.strCustomerName;
-			      obj.EnglishName=ele.strCustomerCode;
-			      obj.contact=ele.strCustomerMobile;
-			      obj.mail=ele.strCustomerEmail;
-			      obj.address=ele.strCustomerAddress;
-			      this.data6.push(obj);
-				});
-				this.totalCount=list.obj.totalcount;
+            // customeDelete(prop){
+            // 	this.operatingCustomer=prop;
+            // 	this.modal1=true;
+            // 	this.deletePopContent=prop.row.name;
+            // 	console.log(prop);
+            // },
+            // customeModify(prop){
+            // 	this.modal2=true;
+            // 	this.operatingCustomer=prop;
+            // 	this.formValidate.name=prop.row.name;
+            // 	this.formValidate.enName=prop.row.EnglishName;
+            // 	this.formValidate.contact=prop.row.contact;
+            // 	this.formValidate.mail=prop.row.mail;
+            // 	this.formValidate.address=prop.row.address;
+            // },
+			togglePage(index) {
+				this.currentPage=--index;
+				this.initData();
 			},
-			async togglePageNum(sizeNum){
+			togglePageNum(sizeNum){
 				this.pageSize=sizeNum;
-				this.data6=[];
-			    // this.currentPage=index-1;
-				const list=await CustomerList({
-						nPageIndex: this.currentPage,
-						nPageSize: this.pageSize,
-						strKeyWord: ""
-					});
-				list.obj.objectlist.forEach((ele,index)=>{
-				  let obj={};
-				  obj.pic=ele.strCustomerLogo;
-			      obj.name=ele.strCustomerName;
-			      obj.EnglishName=ele.strCustomerCode;
-			      obj.contact=ele.strCustomerMobile;
-			      obj.mail=ele.strCustomerEmail;
-			      obj.address=ele.strCustomerAddress;
-			      this.data6.push(obj);
-				});
-				this.totalCount=list.obj.totalcount;
+				this.initData();
 			},
 			async initData(){
-				this.data6=[];
+				this.customerData=[];
 				const list=await CustomerList({
 						nPageIndex: this.currentPage,
 						nPageSize: this.pageSize,
 						strKeyWord: ""
 					});
-				list.obj.objectlist.forEach((ele,index)=>{
-				  let obj={};
-				  obj.pic=ele.strCustomerLogo;
-			      obj.name=ele.strCustomerName;
-			      obj.EnglishName=ele.strCustomerCode;
-			      obj.contact=ele.strCustomerMobile;
-			      obj.mail=ele.strCustomerEmail;
-			      obj.address=ele.strCustomerAddress;
-			      obj.ID=ele.uCustomerUUID;
-			      this.data6.push(obj);
-				});
+				if(list.obj.hasOwnProperty('objectlist')){
+					list.obj.objectlist.forEach((ele,index)=>{
+					  let obj={};
+					  obj.pic=ele.strCustomerLogo;
+				      obj.name=ele.strCustomerName;
+				      obj.EnglishName=ele.strCustomerCode;
+				      obj.contact=ele.strCustomerMobile;
+				      obj.mail=ele.strCustomerEmail;
+				      obj.address=ele.strCustomerAddress;
+				      obj.ID=ele.uCustomerUUID;
+				      this.customerData.push(obj);
+					});
+				}
 				this.totalCount=list.obj.totalcount;
+				// console.log(this.customerData);
 			}
 		},
 		created() {
 			this.initData();
-			// console.log(list);
-			// console.log(this.data6);
 		},
 		async beforeCreate(){
+		},
+		computed:{
+			computedList(){
+				this.searchTxt=this.searchTxt.trim();
+				return this.customerData.filter((ele,index)=>{
+					// console.log(ele.name.indexOf());
+					if(
+						(ele.name.indexOf(this.searchTxt)>-1||
+						ele.EnglishName.indexOf(this.searchTxt)>-1||
+						ele.address.indexOf(this.searchTxt)>-1||
+						ele.contact.indexOf(this.searchTxt)>-1)
+						){
+						return ele;
+					}
+				});
+			}
 		}
 	}
 </script>

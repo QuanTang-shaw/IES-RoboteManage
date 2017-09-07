@@ -1,5 +1,30 @@
 <template>
 	<div>
+		<Modal
+		    v-model="modal1"
+		    title="远程解锁"
+		    @on-ok="RemoteUnlockOk"
+		    @on-cancel="cancel"
+		    style="z-index:100;">
+		    <Alert show-icon>
+		            <p>设备型号:<span>{{devOper.model}}</span></p>
+		            <p>设备编号:<span>{{devOper.numbering}}</span></p>
+		            <template slot="desc"><span style="color:red;">解锁后.....,确定执行操作?</span></template>
+		    </Alert>
+		    <Form  :label-width="80">
+		      <Form-item label="授权状态">
+		        <i-switch size="large">
+		         <span slot="open">开启</span>
+		         <span slot="close">关闭</span>
+		        </i-switch>
+		      </Form-item>
+		     <!--  <Form-item label="选择器">
+		     </Form-item> -->
+		      <Form-item label="截止时间">
+		        <Date-picker type="date" placeholder="选择日期" v-model="endTime"></Date-picker>
+		      </Form-item>
+		    </Form>
+		</Modal>
 		<Breadcrumb style="border-bottom:solid 0px #E7E4E4;">
 		  <Breadcrumb-item href="/orderManage/orderList">订单列表</Breadcrumb-item>
 		  <Breadcrumb-item>订单详情</Breadcrumb-item>
@@ -14,6 +39,9 @@
 	export default{
 		data(){
 			return{
+				devOper:{},
+				modal1:false,
+				endTime:'',
 				orderDevcolumns:[
 					{
 					     type: 'selection',
@@ -27,7 +55,7 @@
 					        return h('div', [
 					            h('img',{
 					                  attrs:{
-					                    src:pic
+					                    // src:pic
 					                  },
 					                  style:{
 					                    height:'80px',
@@ -100,7 +128,10 @@
 					                },
 					                on: {
 					                    click: () => {
-					                        this.RemoteUnlock(params);
+					                        // this.RemoteUnlock(params);
+					                        this.modal1=true;
+					                        this.devOper=params.row;
+					                        this.endTime=params.row.activeTime;
 					                    }
 					                }
 					            }, '远程锁机'),
@@ -126,6 +157,12 @@
 			}
 		},
 		methods:{
+			RemoteUnlockOk(){
+              this.$Message.info('点击了成功!');
+			},
+			cancel(){
+              this.$Message.info('点击了取消!');
+          },
 			async initData(){
 				const list=await orderMachineList({
 					nPageIndex: 0,

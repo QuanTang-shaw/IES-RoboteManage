@@ -1,34 +1,59 @@
 <template>
 	<div>
+		<Modal
+		    v-model="modal1"
+		    title="远程解锁"
+		    @on-ok="LockingOk"
+		    @on-cancel="LockingCancel"
+		    style="z-index:100;">
+		    <Alert show-icon>
+		            <p>设备型号:<span>{{devOper.model}}</span></p>
+		            <p>设备编号:<span>{{devOper.numbering}}</span></p>
+		            <template slot="desc"><span style="color:red;">解锁后.....,确定执行操作?</span></template>
+		    </Alert>
+		    <Form  :label-width="80">
+		      <Form-item label="授权状态">
+		        <i-switch size="large" v-model="Locking">
+		         <span slot="open">开启</span>
+		         <span slot="close">关闭</span>
+		        </i-switch>
+		      </Form-item>
+		     <!--  <Form-item label="选择器">
+		     </Form-item> -->
+		      <Form-item label="截止时间">
+		        <Date-picker type="date" placeholder="选择日期" v-model="endTime"></Date-picker>
+		      </Form-item>
+		    </Form>
+		</Modal>
 		<Breadcrumb style="border-bottom:solid 0px #E7E4E4;">
 		  <Breadcrumb-item href="/DevList">机器列表</Breadcrumb-item>
 		  <Breadcrumb-item>实时监控</Breadcrumb-item>
 		  <!-- <Breadcrumb-item>{{SubBreadcrumbText}}</Breadcrumb-item> -->
 		</Breadcrumb>
-		<div style="padding:0px;border:solid 1px #DCD9D9;margin:30px 0;">
+		<div style="border:solid 1px #DCD9D9;margin:20px 0;">
 			<div style="border-bottom:solid 1px #ECEBEB;margin-bottom:20px;">
-	            <Row type="flex" justify="start" :gutter="40" class="code-row-bg">
+	            <Row type="flex" justify="start" align="middle" :gutter="40" class="code-row-bg" style="border:solid 0px;">
 	             <Col span="4" style="border:solid 0px;">
 	               <img src="../pic/Manipulator1.jpg" alt="" style="height:80px;">
 	             </Col>
-	             <Col span="6">
+	             <Col span="6" style="border:solid 0px;font-size:15px;">
 	                <p><strong>设备名称:</strong>六轴机械手</p>
 	                <p><strong>设备型号:</strong>TSR140-10-A</p>
 	                <p><strong>设备编号:</strong>234</p>
 	             </Col>
-	             <Col span="6">
+	             <Col span="6" style="border:solid 0px;">
 	              <Button type="info" >运行中</Button>
 	             </Col>
-	             <Col span="6">
+	             <Col span="6" style="border:solid 0px;">
 	              <Button type="primary" shape="circle" icon="locked "@click="SubRemoteUnlock">远程锁机</Button>
 	             </Col>
 	            </Row>
 	        </div>
-	        <div>
+	        <div style="padding:0 15px;">
 		        <Tabs type="card">
 		            <Tab-pane label="实时数据">
-		              <div  style="border:solid 0px #0D29F6;height:90%;">
-		               <svg  viewBox="0 0 1100 550" preserveAspectRatio="xMaxYMax meet" style="border: 0px solid #F40B0B;height:100%;" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+		              <div  style="border:solid 0px #0D29F6;height:70%;">
+		               <svg  viewBox="0 0 1200 600" preserveAspectRatio="xMaxYMax meet" style="border: 0px solid #F40B0B;" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 		                <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
 		                <g>
 		                 <title>bg</title>
@@ -117,7 +142,7 @@
 		            </Tab-pane>
 		            <Tab-pane label="报警历史">
 		              <div style="border:solid 0px;">
-		                <!-- <Table stripe :columns="alarmColumns" :data="alarmData"></Table> -->
+		                <Table stripe :columns="alarmColumns" :data="alarmData"></Table>
 		              </div>
 		            </Tab-pane>
 		        </Tabs>
@@ -126,7 +151,106 @@
 	</div>
 </template>
 <script>
+	import {MachineErrorList} from '@/api/getData'
 	export default{
+		data(){
+			return{
+				modal1:false,
+				Locking:false,
+				devOper:{},
+				endTime:'',
+				alarmColumns:[
+				  {
+				    title:'#',
+				    key:'index',
+				    width:60
+				  },
+				  {
+				    title:'报警时间',
+				    key:'time',
+				    width:150
+				  },
+				  {
+				    title:'报警编号',
+				    key:'number',
+				    width:150,
+				    /*filters: [
+				      {
+				        label: '电机过流',
+				        value: 1
+				      },
+				      {
+				        label: '跟随错误',
+				        value: 2
+				      }
+				    ],
+				    // filterMultiple: false,
+				    filterMethod (value, row) {
+				        if (value === 1) {
+				            return row.number == 'err 011';
+				        } else if (value === 2) {
+				            return row.number == 'err 009';
+				        }
+				    }*/
+				  },
+				  {
+				    title:'报警内容',
+				    key:'content',
+				    width:150
+				  },
+				  {
+				    title:'可能原因',
+				    key:'Causes'
+				  },
+				],
+				alarmData:[],
+			}
+		},
+		methods:{
+			SubRemoteUnlock(){
+				this.modal1=true;
+			},
+			LockingOk(){
+			  let self=this;
+			  this.$Message.info('点击了确定');
+			},
+			LockingCancel () {
+			  this.$Message.info('点击了取消');
+			},
+			async initErrData(){
+				const list=await MachineErrorList({
+					nPageIndex: 0,
+			      	nPageSize: 10,
+			      	uMachineUUID: this.$route.params.devID
+				});
+				if(list.obj.hasOwnProperty('objectlist')){
+					this.alarmData=[];
+					list.obj.objectlist.forEach((ele, index)=> {
+						// statements
+						/*index:'1',
+						time:'2017-8-15',
+						number:'err 011',
+						content:'电机过流',
+						Causes:'电机堵转or抖动过大'*/
+						this.alarmData.push({
+							index:index,
+							time:ele.dtErrorDateTime,
+							number:ele.nErrorCode,
+							content:ele.strErrorMsg,
+							Causes:ele.strErrorNote
+						})
+					});
+				}
+				console.log(list)
+			}
+		},
+		async created(){
+			this.initErrData();
+			// console.log(this.$route.params);
+		},
+		beforeCreated(){
+			// console.log(this.$route.params);
+		}
 
 	}
 </script>

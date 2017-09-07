@@ -48,6 +48,15 @@
 	}
 
 
+	export const MachineErrorList = async  function (obj){
+		var result = await get(
+	      "device/Handler_DataError_V1.ashx",
+	      "data_error_list",
+	      obj);
+		 return result;
+	}
+
+
 	export const orderMachineList = async  function (obj){
 		var result = await get(
 	      "device/Handler_OrderMachineEx_V1.ashx",
@@ -93,6 +102,24 @@
 		 return result;
 	}
 
+
+	export const  orderDel = async function(obj){
+		var result = await get(
+          "order/Handler_Order_V1.ashx",
+          "order_del",
+          obj);
+		 return result;
+	}
+
+
+
+	export const  productCategory = async function(obj){
+		var result = await get(
+          "product/Handler_ProductCategoryEx_V1.ashx",
+          "product_category_list",
+          obj);
+		 return result;
+	}
 
 
 

@@ -10,7 +10,8 @@ const orderManage = r => require.ensure([], () => r(require('@/components/orderM
 const orderList = r => require.ensure([], () => r(require('@/components/orderList')), 'orderList');
 const userInfo = r => require.ensure([], () => r(require('@/components/userInfo')), 'userInfo');
 const orderDetail = r => require.ensure([], () => r(require('@/components/orderDetail')), 'orderDetail');
-// const report = r => require.ensure([], () => r(require('@/components/Report_mg')), 'report');
+const mapNav = r => require.ensure([], () => r(require('@/components/mapNav')), 'mapNav');
+const addOrder = r => require.ensure([], () => r(require('@/components/addOrder')), 'addOrder');
 
 export default new Router({
   routes: [
@@ -24,7 +25,7 @@ export default new Router({
           component:DevList
         },
         {
-          path:'monitor',
+          path:'monitor/:devID',
           component:monitor
         },
       ]
@@ -44,10 +45,19 @@ export default new Router({
           component:orderList
         },
         {
-          path:'orderDetail',
+          path:'orderDetail/:orderID',
           component:orderDetail
+        },
+        {
+          path:'addOrder',
+          component:addOrder
         }
       ]
+    },
+    {
+      path: '/mapNav',
+      name: 'mapNav',
+      component:mapNav
     },
     {
       path: '/userInfo',
