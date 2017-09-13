@@ -1,6 +1,6 @@
 <template>
     <div class="layout">
-        <Row type="flex" justify="center" align="middle" class="code-row-bg" style="height:60px;border-bottom:solid 1px #F0F0F0;background-color:#FFFFFF;">
+        <Row class="layout-header" type="flex" justify="center" align="middle">
             <Col span="4" style="border:solid 0px;">
                 <img src="../static/img/TOP-STAR-LOGO.png" alt="" height="40px;">
             </Col>
@@ -11,13 +11,13 @@
                 <Input icon="search" placeholder="请输入点什么..."></Input>
             </Col>
             <Col span="1" style="border:solid 0px;">
-                <Dropdown style="margin-left: 20px">
+                <Dropdown @on-click="accountOper" style="margin-left: 20px">
                     <img src="../static/img/guy-3.jpg" alt="" style="border-radius:50px;width:35px;">
                     <Dropdown-menu slot="list">
                         <Dropdown-item>个人信息</Dropdown-item>
                         <Dropdown-item>账号管理</Dropdown-item>
                         <Dropdown-item>密码管理</Dropdown-item>
-                        <Dropdown-item divided>退出</Dropdown-item>
+                        <Dropdown-item divided name="logOut">退出</Dropdown-item>
                     </Dropdown-menu>
                 </Dropdown>
             </Col>
@@ -159,22 +159,60 @@
                     this.SubBreadcrumbText=this.routerMenu.reportManage[item1-1].text;
                 }
                 // console.log(this.$router);
+            },
+            accountOper(value){
+                if(value=="logOut"){
+                    sessionStorage.clear();
+                    window.location.href="http://user.topstarltd.com/login/login.html?redirect=http://iec.topstarltd.com";
+                }
             }
         },
         created(){
             this.$router.push(this.routerMenu.factoryDevManage[0].path);
+        },
+        beforeCreate(){
+            let userID=GetQueryString("useruuid");
+            let userName=GetQueryString("username");
+            // console.log(sessionStorage.userID==undefined);
+            if((userID==null||userName==null)&&
+                (sessionStorage.userID==undefined||sessionStorage.userName==undefined)
+                ){
+               window.location.href="http://user.topstarltd.com/login/login.html?redirect=http://iec.topstarltd.com";
+            }
+            else if(sessionStorage.userID==undefined||sessionStorage.userName==undefined){
+                sessionStorage.setItem("userID",userID);
+                sessionStorage.setItem("userName",userName);
+            }
+            function GetQueryString(name){
+                var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+                var r = window.location.search.substr(1).match(reg);
+                if(r!=null)return  unescape(r[2]); return null;
+            }
         }
     }
 </script>
-<style scoped>
+<style>
+html,body{height: 100%;}
     .layout{
         border: 1px solid #d7dde4;
         background: #f5f7f9;
         position: relative;
+        font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+        /*font-size:1.5em;*/
         /*width:90%;*/
         /*margin:0 auto;*/
+        height: 100%;
     }
-    .layout-wrap{min-height:694px;}
+    .layout-header{
+        /*height:70px;*/
+        height: 8%;
+        border-bottom:solid 1px #F0F0F0;
+        background-color:#FFFFFF;
+    }
+    .layout-wrap{
+        /*min-height:878px;*/
+        min-height: 92%;
+    }
     .layout-breadcrumb{
         padding: 10px 15px 0;
     }
@@ -189,7 +227,7 @@
     .layout-content-main{
         padding: 0px 10px 25px;
         font-size:20px;
-        min-height: 590px;
+        min-height: 785px;
     }
     .layout-copy{
         text-align: center;
@@ -199,15 +237,10 @@
         /*position: absolute;*/
         right: 0;
         left: 0;
-        background-color: #d4e1ec;
+        background-color: #f5f7f9;
     }
     .layout-menu-left{
         background: #464c5b;
-    }
-    .layout-header{
-        height: 60px;
-        background: #fff;
-        box-shadow: 0 1px 1px rgba(0,0,0,.1);
     }
     .layout-logo-left{
         width: 90%;
@@ -239,5 +272,17 @@
         display: inline-block;
         cursor:pointer;
     }
-    .fileUpload:hover{border:dotted 1px #FB4242;}
+    /*.fileUpload:hover{border:dotted 1px #FB4242;}
+    .ivu-menu-submenu-title{
+        font-size: 25px;
+    }
+    .ivu-table-header,.ivu-table-body,.ivu-menu-item{
+        font-size: 20px;
+    }
+   .ivu-menu-item{font-size:18px;}
+   .ivu-table{font-size: 16px;}
+   .ivu-menu{font-size: 20px;}
+   .ivu-table th{
+       height: 50px;
+   }*/
 </style>

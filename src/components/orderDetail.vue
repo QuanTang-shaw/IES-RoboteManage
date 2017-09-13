@@ -7,13 +7,15 @@
 		    @on-cancel="cancel"
 		    style="z-index:100;">
 		    <Alert show-icon>
-		            <p>设备型号:<span>{{devOper.model}}</span></p>
-		            <p>设备编号:<span>{{devOper.numbering}}</span></p>
-		            <template slot="desc"><span style="color:red;">解锁后.....,确定执行操作?</span></template>
+	            <p>设备型号:<span>{{devOper.model}}</span></p>
+	            <p>设备编号:<span>{{devOper.numbering}}</span></p>
+	            <template slot="desc">
+		            <span style="color:red;">解锁后.....,确定执行操作?</span>
+	            </template>
 		    </Alert>
 		    <Form  :label-width="80">
 		      <Form-item label="授权状态">
-		        <i-switch size="large">
+		        <i-switch size="large" v-model="Locking">
 		         <span slot="open">开启</span>
 		         <span slot="close">关闭</span>
 		        </i-switch>
@@ -35,13 +37,14 @@
 	</div>
 </template>
 <script>
-	import {orderMachineList} from '@/api/getData'
+	import {MachineLocking,orderMachineList} from '@/api/getData'
 	export default{
 		data(){
 			return{
 				devOper:{},
 				modal1:false,
 				endTime:'',
+				Locking:false,
 				orderDevcolumns:[
 					{
 					     type: 'selection',
@@ -129,6 +132,8 @@
 					                on: {
 					                    click: () => {
 					                        // this.RemoteUnlock(params);
+					                        if(params.row.status==2)this.Locking=false;
+                                            else if(params.row.status==3) this.Locking=true;
 					                        this.modal1=true;
 					                        this.devOper=params.row;
 					                        this.endTime=params.row.activeTime;
@@ -157,30 +162,51 @@
 			}
 		},
 		methods:{
-			RemoteUnlockOk(){
-              this.$Message.info('点击了成功!');
+			async RemoteUnlockOk(){
+              const date=new Date(),
+                    startTime=`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
+              let DevStatus=0;
+              // console.log(this.devOper);
+              if(this.Locking){
+                DevStatus=3;
+              }
+              else{
+                DevStatus=2;
+              }
+              await MachineLocking({
+                uDeviceUUID: this.devOper.devID,
+                nDeviceStatus: DevStatus,
+                dtDeviceActiveDateTimeB: startTime,
+                dtDeviceActiveDateTimeE: this.endTime
+              });
+              this.initData();
+              this.$Message.info('点击了确定');
 			},
 			cancel(){
               this.$Message.info('点击了取消!');
-          },
+            },
 			async initData(){
+				// console.log(this.$route.params.orderID);
 				const list=await orderMachineList({
 					nPageIndex: 0,
 				    nPageSize: 6,
 				    strKeyWord: "",
-				    uOrderUUID : 0  // 订单UUID
+				    uOrderUUID : this.$route.params.orderID  // 订单UUID
 				});
 				if(list.obj.hasOwnProperty('objectlist')){
-					// console.log(list);
+					console.log(list);
+					this.orderDevData=[];
 					list.obj.objectlist.forEach((ele,index)=>{
 					  let obj={};
-				      obj.name=ele.strProductName_cn;
-				      obj.numbering=ele.strDeviceSN;
-				      obj.model=ele.strProductModel;
-				      obj.status=ele.nDeviceStatus;
-				      obj.customer=ele.strCustomerName;
-				      obj.activeTime=ele.dtDeviceActiveDateTimeB;
-				      this.orderDevData.push(obj);
+				      this.orderDevData.push({
+				      	devID:ele.uDeviceUUID,
+					    name:ele.strProductName_cn,
+					    numbering:ele.strDeviceSN,
+					    model:ele.strProductModel,
+					    status:ele.nDeviceStatus,
+					    customer:ele.strCustomerName,
+					    activeTime:ele.dtDeviceActiveDateTimeE,
+				      });
 					});
 				}
 			}

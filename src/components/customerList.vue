@@ -75,7 +75,7 @@
 	</div>
 </template>
 <script>
-	import {CustomerList,CustomerDel,CustomerEdit} from '@/api/getData'
+	import {CustomerList,CustomerDel,CustomerEdit,CustomerAdd} from '@/api/getData'
 	export default{
 		name:'workshoplist',
 		data () {
@@ -83,6 +83,7 @@
 			    searchTxt:'',
 			    deletePopContent:'',
 			    operatingCustomer:{},
+			    isEditCustomer:false,
 			    currentIndex:-1,
 			    totalCount:0,
 			    pageSize:5,
@@ -156,6 +157,7 @@
 		                                        click: () => {
 		                                            // this.customeModify(params);
 		                                            this.modal2=true;
+		                                            this.isEditCustomer=true;
 		                                            this.operatingCustomer=params;
 		                                            this.formValidate.name=params.row.name;
 		                                            this.formValidate.enName=params.row.EnglishName;
@@ -236,18 +238,32 @@
 			handleSubmit (name) {
                 this.$refs[name].validate(async(valid) => {
                     if (valid) {
-                    	await CustomerEdit({
-                    		uCustomerUUID : this.operatingCustomer.row.ID, // 指定UUID
-        		            // uUserUUID
-        		          	uLocationUUID : 0,
-	        		        strCustomerLogo : '',
-	        		        strCustomerName : this.formValidate.name,
-	        		        strCustomerCode : this.formValidate.enName,
-	        		        strCustomerMobile : this.formValidate.contact,
-	        		        strCustomerEmail : this.formValidate.mail,
-	        		        strCustomerAddress : this.formValidate.address,
-	        		        nCustomerStatus : 1
-                    	});
+                    	if(this.isEditCustomer){
+	                    	await CustomerEdit({
+	                    		uCustomerUUID : this.operatingCustomer.row.ID, // 指定UUID
+	        		            // uUserUUID
+	        		          	uLocationUUID : 0,
+		        		        strCustomerLogo : '',
+		        		        strCustomerName : this.formValidate.name,
+		        		        strCustomerCode : this.formValidate.enName,
+		        		        strCustomerMobile : this.formValidate.contact,
+		        		        strCustomerEmail : this.formValidate.mail,
+		        		        strCustomerAddress : this.formValidate.address,
+		        		        nCustomerStatus : 1
+	                    	});
+                    	}
+                    	else {
+                    		await CustomerAdd({
+	        		          	uLocationUUID : 0,
+		        		        strCustomerLogo : '',
+		        		        strCustomerName : this.formValidate.name,
+		        		        strCustomerCode : this.formValidate.enName,
+		        		        strCustomerMobile : this.formValidate.contact,
+		        		        strCustomerEmail : this.formValidate.mail,
+		        		        strCustomerAddress : this.formValidate.address,
+		        		        nCustomerStatus : 1
+	                    	});
+                    	}
                     	this.initData();
                     	this.modal2=false;
                         this.$Message.success('提交成功!');
@@ -264,6 +280,7 @@
             },
             addCustomer(){
             	this.modal2=true;
+            	this.isEditCustomer=false;
             	if(typeof this.formValidate=='object'){
 	            	for (let item in this.formValidate) {
 	            		this.formValidate[item]='';

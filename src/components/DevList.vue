@@ -152,8 +152,13 @@
       </Modal> -->
       <div style="margin-bottom:30px;">
         <div>客户选择:
-          <Select v-model="chosenCustomer" style="width:200px">
-            <Option v-for="item in customerList" :value="item.value" :key="item.value">{{ item.label }}</Option>
+          <Select @on-change="toggleCustomer" v-model="chosenCustomer"  style="width:200px">
+            <OptionGroup label="全部客户">
+              <Option :value="initSelect.value">{{initSelect.label}}</Option>
+            </OptionGroup>
+            <OptionGroup label="客户列表">
+              <Option v-for="item in customerList" :value="item.value" :key="item.value">{{ item.label }}</Option>
+            </OptionGroup>
           </Select>
         </div>
       </div>
@@ -163,6 +168,7 @@
       <Page
         @on-change="togglePage"
         @on-page-size-change="togglePageNum"
+        :current="currentPage"
         :total="totalCount"
         :page-size="pageSize"
         :page-size-opts="pageSizeOpts"
@@ -173,20 +179,25 @@
 </template>
 <script>
   import pic from '@/pic/Manipulator1.jpg'
-  import {CustomerList,MachineList,getConfig} from '@/api/getData'
+  import {CustomerList,MachineList,MachineLocking,getConfig} from '@/api/getData'
   import mqtt from 'mqtt'
   export default {
-    name: 'plantList',
     data () {
       return {
         endTime:'',
         modal1: false,
+        chosenCustomer:'0',
+        initSelect:{
+          value:"0",
+          label:"全部客户"
+        },
+        CustomerID:0,
         modal2: false,
         Locking:false,
         currentPage:0,
         totalCount:0,
         pageSize:5,
-        pageSizeOpts:[5,10,15,20],
+        pageSizeOpts:[5,10,15],
         customerList:[],
         devOper:{},
         DevColumns: [
@@ -202,7 +213,7 @@
                             return h('div', [
                                 h('img',{
                                       attrs:{
-                                        src:pic
+                                        src:`http://iec.top-link.me${params.row.picPath}`
                                       },
                                       style:{
                                         height:'80px',
@@ -236,10 +247,20 @@
                                       // type: 'info',
                                       size: 'small',
                                   }
-                              },`停止中`)
+                              },`待售`)
                           ]);
                         }
                         else if(params.row.status==2){
+                          return h('div', [
+                              h('Button', {
+                                  props: {
+                                      // type: 'info',
+                                      size: 'small',
+                                  }
+                              },`停止中`)
+                          ]);
+                        }
+                        else if(params.row.status==3){
                           return h('div', [
                               h('Button', {
                                   props: {
@@ -275,7 +296,9 @@
                                     },
                                     on: {
                                         click: () => {
-                                            // this.RemoteUnlock(params);
+                                            // console.log(params);
+                                            if(params.row.status==2)this.Locking=false;
+                                            else if(params.row.status==3) this.Locking=true;
                                             this.modal1=true;
                                             this.devOper=params.row;
                                             this.endTime=params.row.activeTime;
@@ -293,6 +316,8 @@
                                         click: () => {
                                             // this.DevMonitor(params);
                                             // this.DevMonitor2(params);
+                                            // console.log(params);
+                                            // this.$root.Bus.$emit('sendDevMes',params.row);
                                             this.$router.push(`monitor/${params.row.devID}`);
                                         }
                                     }
@@ -408,7 +433,6 @@
             Causes:'电机堵转or抖动过大'
           },*/
         ],
-        chosenCustomer: '',
         objStyle:{
           width:'75%',
           top:"20px",
@@ -420,44 +444,73 @@
       }
     },
     methods:{
-      LockingOk(){
-        let self=this;
+      DevMonitor2(){
+        this.$root.Bus.$emit('sendDevMes', 123);
+      },
+      async LockingOk(){
+        const date=new Date(),
+              startTime=`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
+        let DevStatus=0;
+        // console.log(this.devOper)
+        if(this.Locking){
+          DevStatus=3;
+        }
+        else{
+          DevStatus=2;
+        }
+        await MachineLocking({
+          uDeviceUUID: this.devOper.devID,
+          nDeviceStatus: DevStatus,
+          dtDeviceActiveDateTimeB: startTime,
+          dtDeviceActiveDateTimeE: this.endTime
+        });
+        this.initDevData();
         this.$Message.info('点击了确定');
       },
       LockingCancel () {
         this.$Message.info('点击了取消');
       },
       togglePage(index){
-        this.currentPage=--index;
+        // this.currentPage=--index;
+        sessionStorage.devCurPage=--index;
         this.initDevData();
       },
       togglePageNum(PageNum){
         this.pageSize=PageNum;
         this.initDevData();
       },
-      /*SubRemoteUnlock(){
-        this.modal1=true;
-      },*/
+      toggleCustomer(data){
+        // alert(data);
+        if(this.chosenCustomer){
+          this.CustomerID=this.chosenCustomer;
+          this.initDevData();
+        }
+      },
       async initDevData(){
         const list=await MachineList({
-                nPageIndex: this.currentPage,
+                nPageIndex:parseInt(sessionStorage.getItem('devCurPage')),
                 nPageSize: this.pageSize,
                 strKeyWord: "",
+                uCustomerUUID: this.CustomerID,
                 uLocationUUID: 0,
                 uProductUUID: 0
               });
+        this.DevData=[];
         if(list.obj.hasOwnProperty('objectlist')){
-          this.DevData=[];
           list.obj.objectlist.forEach((ele,index)=>{
-            let obj={};
-                obj.name=ele.strProductName_cn;
-                obj.numbering=ele.strDeviceSN;
-                obj.model=ele.strProductModel;
-                obj.status=ele.nDeviceStatus;
-                obj.customer=ele.strCustomerName;
-                obj.activeTime=ele.dtDeviceActiveDateTimeB;
-                obj.devID=ele.uMachineUUID;
-                this.DevData.push(obj);
+            this.DevData.push({
+              name:ele.strProductName_cn,
+              numbering:ele.strMachineSN,
+              model:ele.strProductModel,
+              status:ele.nDeviceStatus,
+              customer:ele.strCustomerName,
+              picPath:ele.strProductImage,
+              activeTime:ele.dtDeviceActiveDateTimeE,
+              devID:ele.uDeviceUUID,
+              machineID:ele.uMachineUUID,
+              appID:ele.uAppUUID,
+              devStatus:ele.nDeviceStatus
+            });
           });
         }
         this.totalCount=list.obj.totalcount;
@@ -477,78 +530,16 @@
             this.customerList.push(obj);
           });
         }
-        // console.log(list);
+        // console.log(this.customerList);
       }
     },
     created(){
-      this.initDevData();
+      this.currentPage=parseInt(sessionStorage.getItem('devCurPage'))+1;
       this.initCustomerData();
+      this.initDevData();
     },
     beforeCreate(){
-      /*
-        svg_txtValueRx
-        svg_txtValueRy
-        svg_txtValueRz
-        svg_txtMachineModel
-        svg_txtValueX
-        svg_txtValueY
-        svg_txtValueZ
-        svg_txtCyclePeriod
-        svg_txtCycleCount
-        svg_txtPowerOnTime
-        svg_txtRunTime
-        svg_txtRunSpeed
-        svg_txtErrorCount
-      */
-      const config=[
-        //第一台机器配置
-        {
-          info: {
-            model: 'STR900',   // 型号
-            mid: 'm_v9573514624',   // 机器编号
-            did: 't_v9573514624',   // 终端采集设备编号
-            brand: 'TOPSTAR', // 品牌
-            tags: [ 'tag1', 'tag2'],   // 标签
-            station_id: '80',   // 机台号
-            image: '/images/no_product.png',   // 照片
-          },
-          datasource: {
-            mqtt: {
-              server: 'mqtt://iec.topstarltd.com',  // 服务器
-              port : 9011,  // 端口
-              topic: 'topstarltd/iec/app/10001',   // 订阅 appid:10001 位置的数据源
-            }
-          },
-          svg: ["/svg_folder/test1.svg"],  // SVG文件路径
-            fields: [
-                {
-                  id: "svg_txtTempOut",
-                  attr: "html",
-                  key: "svg_txtTempOut",
-                },{
-                    id: "svg_rectWaterLevelLow",
-                    attr: "fill",
-                    key: "svg_rectWaterLevelLow",
-                },{
-                    id: "svg_rectInWaterPressureLow",
-                    attr: "fill",
-                    key: "svg_rectInWaterPressureLow",
-                },{
-                    id: "svg_rectOverHeat",
-                    attr: "fill",
-                    key: "svg_rectOverHeat",
-                },{
-                    id: "svg_rectSystemPressureHigh",
-                    attr: "fill",
-                    key: "svg_rectSystemPressureHigh",
-                }
-            ]
-        },
-      ]
-      // const mqtt = require('mqtt');
-      // const client = mqtt.connect('mqtt://47.91.154.238:9011');
       const client = mqtt.connect('mqtt://iec.topstarltd.com:9011');
-      // console.log(client);
       client.on('connect', function() {
         client.subscribe('topstarltd/iec/app/10001');
         // client.publish('topstarltd/iec/app/10001', 'test');
@@ -556,7 +547,6 @@
       let str="topstarltd/iec/app/10001";
       client.on("message", function(str, payload) {
         // console.log(JSON.parse(payload));
-
         let obj=JSON.parse(payload).data;
         // $('#'+item.id).attr(item.attr, item.render(mqdat[_key]))
         $('#'+"svg_txtValueX").html(obj.axis_angle[0].toFixed(1));
@@ -575,7 +565,10 @@
         // cb(JSON.parse(payload))
         // {client.end()}
       });
-      // getConfig().then(data=>console.log(data));
+      /*getConfig({
+        uMachineUUID : 0,
+        uAppUUID : 0
+      }).then(data=>console.log(data));*/
     }
   }
 </script>

@@ -1,27 +1,22 @@
 <template>
 	<div >
-		<Row type="flex" justify="space-between" style="border:solid 1px #E2E2E2;height:600px;">
-	        <Col span="6" style="border:solid 0px;height:100%;background-color:#F7F4F4">
-		        <div class="devNav">
+		<Row class="grid" type="flex" justify="space-between">
+	        <Col class="devNav" span="6" style="">
+		        <div>
 		        	<div class="devItem" v-for="(dev,index) in devList" @click="devPostion(dev,index)">
 			        	<Row type="flex" justify="center" align="middle" style="height:100%;">
-		        	        <Col span="5" style="border:solid 0px;"><span style="background-color:#F53131;padding:6px 10px;color:white;border-radius:100px;">{{index+1}}</span></Col>
+		        	        <Col span="6" style="border:solid 0px;">
+			        	        <span class="numIcon">{{index+1}}</span>
+		        	        </Col>
 		        	        <Col span="18">
-		        	        	<div>
-		        	        		<div style="font-size: 16px;">
-			        	        		<p>型号:<strong>{{dev.strDeviceSN}}</strong></p>
-			        	        		<p>编号:<strong>{{dev.strDeviceSimCardNo}}</strong></p>
-		        	        		</div>
-		        	        		<div style="font-size: 10px;">
-		        	        			<p>地址:<span>深圳市南山区...</span></p>
-		        	        		</div>
-
-		        	        	</div>
-
+	        	        		<div style="font-size: 16px;">
+		        	        		<p>型号:<strong>{{dev.strProductModel}}</strong></p>
+		        	        		<p>编号:<strong>{{dev.strMachineSN}}</strong></p>
+	        	        		</div>
 		        	        </Col>
 		        	    </Row>
 		        	</div>
-		        	<Page class="devMapPage" @on-change="togglePage" :page-size="5" :total="totalCount" size="small"></Page>
+		        	<Page class="devMapPage" @on-change="togglePage" :page-size="7" :total="totalCount" size="small"></Page>
 		        </div>
 	        </Col>
 	        <Col span="18" >
@@ -33,8 +28,8 @@
 	                 :zoom="zoom"
 	                 class="amap-demo"
 	                 >
-	                 <el-amap-marker v-for="marker in markers" :position="marker.position" :content="marker.content" :events="marker.events"></el-amap-marker>
-	                 <el-amap-info-window v-for="window in windows" :position="window.position" :visible="window.visible" :content="window.content"></el-amap-info-window>
+	                 <el-amap-marker v-for="(marker,index) in markers" :key="index" :position="marker.position" :content="marker.content" :events="marker.events"></el-amap-marker>
+	                 <el-amap-info-window v-for="(window,index) in windows" :key="index" :position="window.position" :visible="window.visible" :content="window.content"></el-amap-info-window>
 	               </el-amap>
 	            </div>
 	        </Col>
@@ -72,7 +67,7 @@
 		created() {
 			let self = this;
 			this.initDevData();
-			AMapUI.loadUI(['overlay/SimpleMarker'], function(SimpleMarker) {
+			/*AMapUI.loadUI(['overlay/SimpleMarker'], function(SimpleMarker) {
 			    //启动页面
 			    initPage(SimpleMarker);
 			    // console.log(SimpleMarker)
@@ -119,11 +114,10 @@
 			        map: self.$refs.map.$$getInstance(),
 			        position: [116.305285, 39.904989]
 			    });
-			}
+			}*/
 		},
 		methods: {
 			togglePage(index){
-				// alert(index)
 				this.currentPage=--index;
 				this.initDevData();
 			},
@@ -132,13 +126,13 @@
 				this.center=[];
 				this.center=[dev.fDeviceMapLongitude,dev.fDeviceMapLatitude];
 				this.zoom=12;
-				this.windows.forEach(window => {
+				/*this.windows.forEach(window => {
                   window.visible = false;
                 });
 
                 this.$nextTick(() => {
                   this.windows[index].visible = true;
-                });
+                });*/
 				/*this.center[0]=dev.fDeviceMapLongitude;
 				this.center[1]=dev.fDeviceMapLatitude;*/
 			},
@@ -146,7 +140,7 @@
 				let self=this;
 				const list=await MachineList({
 				        nPageIndex: this.currentPage,
-				        nPageSize: 5,
+				        nPageSize: 7,
 				        strKeyWord: "",
 				        uLocationUUID: 0,
 				        uProductUUID: 0
@@ -177,7 +171,8 @@
 						});
 						this.windows.push({
 							position:[ele.fDeviceMapLongitude,ele.fDeviceMapLatitude],
-							content:`<div class="prompt">${ index }</div>`,
+							content:`<div class="prompt">订单创建时间:
+										<span>${ele.dtDeviceActiveDateTimeB}</span></div>`,
 							visible:false
 						});
 
@@ -189,6 +184,21 @@
 	}
 </script>
 <style>
+	.grid{
+		border:solid 1px #E2E2E2;
+		height:600px;
+	}
+	.devNav{
+		height:100%;
+		/*background-color:#efefef;*/
+	}
+	.numIcon{
+		background-color:#F53131;
+		padding:4px 10px;
+		color:white;
+		border-radius:100px;
+		margin-left:10px;
+	}
 	.amap-wrapper {
 		width: 100%;
 		/*height: 100%;*/
@@ -196,18 +206,20 @@
 	  height: 600px;
 	}
 	.devItem{
-		border:solid 1px #E1D9D9;
-		height: 100px;
+		/*border:solid 1px #E1D9D9;*/
+		border-bottom: solid 1px #F6F6F6;
+		height: 80px;
 		cursor: pointer;
 	}
 	.devItem:hover{
-		background-color: #FFFFFF;
+		background-color: #F2F2F2;
 	}
 	.prompt {
+      /*text-align: center;*/
       background: white;
-      width: 100px;
-      height: 30px;
-      text-align: center;
+      width: 250px;
+      height: 50px;
+      font-size:15px;
     }
     .devMapPage{
     	position: absolute;

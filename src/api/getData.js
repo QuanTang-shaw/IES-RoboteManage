@@ -3,6 +3,9 @@
 	const get=function (str,op,obj) {
 		var promise=new Promise(function (resolve,reject) {
 			var url =`http://iec.top-link.me/${str}`,
+			// var url =`http://iec.topstarltd.com/${str}`,
+			// var url =`http://localhost:8810/${str}`,
+
 				req = new TRequest();
 			req.exec(url,op,obj,
 			    // success:
@@ -19,11 +22,11 @@
 		return promise;
 	}
 
-	export const getConfig = async  function (obj){
+	/*export const getConfig = async  function (obj){
 		var promise=new Promise(function (resolve,reject) {
-			var url =`http://iec.top-link.me/iec/Handler_MachineData_V1.ashx`,
+			var url =`http://iec.top-link.me/device/Handler_MachineData_V1.ashx`,
 				req = new TRequest(),
-				op =  'iec_machine_config';
+				op =  'user_machine_getconfig';
 			req.exec(url,op,obj,
 			    // success:
 			    function (json) {
@@ -37,12 +40,30 @@
 			    });
 		});
 		return promise;
+	}*/
+
+
+	export const getConfig = async  function (obj){
+		var result = await get(
+	      "device/Handler_UserMachineEx_V1.ashx",
+	      "user_machine_getconfig",
+	      obj);
+		 return result;
 	}
 
 	export const MachineList = async  function (obj){
 		var result = await get(
 	      "device/Handler_UserMachineEx_V1.ashx",
 	      "user_machine_list",
+	      obj);
+		 return result;
+	}
+
+
+	export const MachineLocking = async  function (obj){
+		var result = await get(
+	      "device/Handler_UserMachineEx_V1.ashx",
+	      "user_machine_setauth",
 	      obj);
 		 return result;
 	}
@@ -93,6 +114,15 @@
 	}
 
 
+	export const  CustomerAdd = async function(obj){
+		var result = await get(
+          "customer/Handler_Customer_V1.ashx",
+          "user_customer_add",
+          obj);
+		 return result;
+	}
+
+
 
 	export const  orderList = async function(obj){
 		var result = await get(
@@ -111,6 +141,16 @@
 		 return result;
 	}
 
+	export const  AddOrder = async function(obj){
+		var result = await get(
+          "order/Handler_Order_V1.ashx",
+          "order_new",
+          obj);
+		 return result;
+	}
+
+
+
 
 
 	export const  productCategory = async function(obj){
@@ -125,4 +165,129 @@
 
 
 
+
+
+
+
+
+
+
+
+	/*
+	  svg_txtValueRx
+	  svg_txtValueRy
+	  svg_txtValueRz
+	  svg_txtMachineModel
+	  svg_txtValueX
+	  svg_txtValueY
+	  svg_txtValueZ
+	  svg_txtCyclePeriod
+	  svg_txtCycleCount
+	  svg_txtPowerOnTime
+	  svg_txtRunTime
+	  svg_txtRunSpeed
+	  svg_txtErrorCount
+	*/
+	/*$('#'+"svg_txtValueX").html(obj.axis_angle[0].toFixed(1));
+	$('#'+"svg_txtValueY").html(obj.axis_angle[1].toFixed(1));
+	$('#'+"svg_txtValueZ").html(obj.axis_angle[2].toFixed(1));
+	$('#'+"svg_txtValueRx").html(obj.axis_angle[3].toFixed(1));
+	$('#'+"svg_txtValueRy").html(obj.axis_angle[4].toFixed(1));
+	$('#'+"svg_txtValueRz").html(obj.axis_angle[5].toFixed(1));
+	$('#'+"svg_txtCycleCount").html(obj.cycle_count);
+	$('#'+"svg_txtCyclePeriod").html(obj.cycle_period.toFixed(1));
+	$('#'+"svg_txtPowerOnTime").html(Math.trunc(obj.total_time_power_on));
+	$('#'+"svg_txtRunTime").html(Math.trunc(obj.total_time_run));
+	$('#'+"svg_txtErrorCount").html(obj.fault_count);*/
+
+
+	const config=[
+	  //第一台机器配置
+	  {
+	   	info: {
+	    	      model: 'STR900',
+	    	      mid: 'm_v9573514624',
+	    	      did: 't_v9573514624',
+	    	      brand: 'TOPSTAR',
+	    	      tags: [ 'tag1', 'tag2'],
+	    	      station_id: '80',
+	    	      image: "/image/TSR-050-A.jpg",
+	    	    },
+	    datasource: {
+	      mqtt: {
+	        server: "mqtt://iec.topstarltd.com",
+	        port : 9011,
+	        topic: "topstarltd/iec/app/10001",
+	      }
+	    },
+	    svg:"/svg/TSR-050-A.svg",
+	      fields: [
+	          {
+	            id: "svg_txtValueRx",
+	            attr: "html",
+	            key: "axis_angle",
+	          },{
+	              id: "svg_txtValueRy",
+	              attr: "fill",
+	              key: "axis_angle",
+	          },{
+	              id: "svg_txtValueRz",
+	              attr: "fill",
+	              key: "axis_angle",
+	          },{
+	              id: "svg_txtValueX",
+	              attr: "fill",
+	              key: "axis_angle",
+	          },{
+	              id: "svg_txtValueY",
+	              attr: "fill",
+	              key: "axis_angle",
+	          },{
+	              id: "svg_txtValueZ",
+	              attr: "fill",
+	              key: "axis_angle",
+	          },{
+	              id: "svg_txtCyclePeriod",
+	              attr: "fill",
+	              key: "cycle_period",
+	          },{
+	              id: "svg_txtCycleCount",
+	              attr: "fill",
+	              key: "cycle_count",
+	          },{
+	              id: "svg_txtPowerOnTime",
+	              attr: "fill",
+	              key: "total_time_power_on",
+	          },{
+	              id: "svg_txtRunTime",
+	              attr: "fill",
+	              key: "total_time_run",
+	          },{
+	              id: "svg_txtRunSpeed",
+	              attr: "fill",
+	              key: "svg_txtRunSpeed",
+	          },{
+	              id: "svg_txtErrorCount",
+	              attr: "fill",
+	              key: "fault_count",
+	          },{
+	              id: "svg_txtMachineModel",
+	              attr: "fill",
+	              key: "svg_txtMachineModel",
+	          },{
+	              id: "svg_txtMachineID",
+	              attr: "fill",
+	              key: "svg_txtMachineID",
+	          },{
+	              id: "svg_gpi",
+	              attr: "fill",
+	              key: "svg_gpi",
+	          },{
+	              id: "svg_gpo",
+	              attr: "fill",
+	              key: "svg_gpo",
+	          }
+	      ]
+	  }
+	];
 

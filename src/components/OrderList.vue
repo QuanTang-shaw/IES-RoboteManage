@@ -1,19 +1,8 @@
 <template>
 	<div>
-		<!-- <Modal
-            v-model="modal1"
-            title="普通的Modal对话框标题"
-            @on-ok="ok"
-            @on-cancel="cancel">
-            <p>对话框内容</p>
-            <p>对话框内容</p>
-            <p>对话框内容</p>
-        </Modal> -->
         <Modal v-model="modal2"
                 @on-ok="DelOk"
                 @on-cancel="DelCancel">
-            <!-- 订单删除后,与订单有关的设备客户等信息都将删除且不可恢复, -->
-            <!-- <p>您确定要删除订单{{}}吗?</p> -->
             <Alert type="warning" show-icon>
                 <template slot="desc">
                 订单删除后,与订单有关的设备客户等信息都将删除且不可恢复
@@ -107,7 +96,7 @@
                                         click: () => {
                                             // this.show(params.index);
                                             // this.orderDetail(params);
-                                            this.$router.push(`orderDetail/:${params.row.orderID}`);
+                                            this.$router.push(`orderDetail/${params.row.orderID}`);
                                         }
                                     }
                                 }, '订单详情'),
@@ -209,7 +198,8 @@
         },
 	    methods: {
             togglePage(index){
-                this.currentPage=--index;
+                // this.currentPage=--index;
+                sessionStorage.orderCurPage=--index;
                 this.initData();
             },
             togglePageNum(pageNum){
@@ -217,11 +207,11 @@
                 this.initData();
             },
             async DelOk(){
-                console.log(this.orderOper);
-                /*await orderDel({
+                // console.log(this.orderOper);
+                await orderDel({
                     uOrderUUID:this.orderOper.orderID
                 });
-                this.initData();*/
+                this.initData();
             },
             DelCancel(){
               this.$Message.info('点击了取消');
@@ -245,7 +235,7 @@
 	        },
 	        async initData(){
 		    	let list=await orderList({
-		    		nPageIndex : this.currentPage,
+		    		nPageIndex : parseInt(sessionStorage.getItem('orderCurPage')),
     		        nPageSize : this.pageSize,
     		        strKeyWord : ""
 		    	});
@@ -266,6 +256,7 @@
 	        }
 	    },
 	    created(){
+            this.currentPage=parseInt(sessionStorage.getItem('orderCurPage'))+1;
 	    	this.initData();
 	    }
     }
