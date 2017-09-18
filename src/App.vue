@@ -8,85 +8,46 @@
                 <h1 style="color:#4A4343; font-size:35px;">拓斯达工业云平台</h1>
             </Col>
             <Col span="7" style="border:solid 0px;">
-                <Input icon="search" placeholder="请输入点什么..."></Input>
+                <Input disabled icon="search" placeholder="请输入点什么..."></Input>
             </Col>
             <Col span="1" style="border:solid 0px;">
                 <Dropdown @on-click="accountOper" style="margin-left: 20px">
                     <img src="../static/img/guy-3.jpg" alt="" style="border-radius:50px;width:35px;">
                     <Dropdown-menu slot="list">
-                        <Dropdown-item>个人信息</Dropdown-item>
-                        <Dropdown-item>账号管理</Dropdown-item>
-                        <Dropdown-item>密码管理</Dropdown-item>
+                        <Dropdown-item name="userInfo">用户信息</Dropdown-item>
+                        <!-- <Dropdown-item>账号管理</Dropdown-item>
+                        <Dropdown-item>密码管理</Dropdown-item> -->
                         <Dropdown-item divided name="logOut">退出</Dropdown-item>
                     </Dropdown-menu>
                 </Dropdown>
             </Col>
             <Col span="2">
-                <img src="../static/img/flage.jpg" alt="" style="height:30px;">
+                <!-- <img src="../static/img/flage.jpg" alt="" style="height:30px;"> -->
             </Col>
         </Row>
         <Row type="flex" class="layout-wrap">
             <i-col span="4" class="layout-menu-left">
-                <Menu active-name="1-1" theme="dark" width="auto" :open-names="['1']" @on-select="router">
-                   <!--  <div class="layout-logo-left">
-                       <img src="../static/img/53007d5b00000.png" alt="LOGO">
-                       <img src="../static/img/TOP-STAR-LOGO.png" alt="LOGO">
-                   </div> -->
-                    <!-- <Menu-item name="0">
-                        <Icon type="home"></Icon>
-                        首页
-                    </Menu-item> -->
+                <Menu ref="nav" active-name="1-1" theme="dark" width="auto" :open-names="['1']" @on-select="setRouter">
                     <Submenu name="1">
                         <template slot="title">
-                            <Icon type="ios-navigate"></Icon>
-                            生产设备管理
+                            <Icon type="ios-gear"></Icon>
+                            设备管理
                         </template>
-                        <Menu-item :name="`1-${index+1}`" :key="index" v-for="(menu,index) in routerMenu.factoryDevManage" >
+                        <Menu-item :name="`1-${index+1}`" :key="index" v-for="(menu,index) in routerMenu.DevManage" >
                             {{menu.text}}
                             <!-- <router-link class="router-link" to="/">工厂管理</router-link> -->
                         </Menu-item>
                     </Submenu>
-                    <!-- <Submenu name="2">
-                        <template slot="title">
-                            <Icon type="ios-keypad"></Icon>
-                            报表管理
-                        </template>
-                        <Menu-item :name="`2-${index+1}`" :key="index" v-for="(menu,index) in routerMenu.reportManage">{{menu.text}}</Menu-item>
-                    </Submenu> -->
                 </Menu>
             </i-col>
             <i-col span="20">
-                <!-- <div class="layout-header" style="background-color:#f8f8f9;">
-                    <Row :gutter="16" type="flex" justify="center" align="middle" class="code-row-bg" style="height:100%;">
-                        <Col span="10" style="border:solid 0px;">
-                            <h1 style="color:#0B0303; font-size:35px;">智能工厂管理系统</h1>
-                        </Col>
-                        <Col span="7" style="border:solid 0px;">
-                            <Input icon="search" placeholder="请输入点什么..."></Input>
-                        </Col>
-                        <Col span="3" style="border:solid 0px;">
-                            <Dropdown style="margin-left: 20px">
-                                <img src="../static/img/guy-3.jpg" alt="" style="border-radius:50px;width:35px;">
-                                <Dropdown-menu slot="list">
-                                    <Dropdown-item>个人信息</Dropdown-item>
-                                    <Dropdown-item>账号管理</Dropdown-item>
-                                    <Dropdown-item>密码管理</Dropdown-item>
-                                    <Dropdown-item divided>退出</Dropdown-item>
-                                </Dropdown-menu>
-                            </Dropdown>
-                        </Col>
-                        <Col span="2">
-                            <img src="../static/img/flage.jpg" alt="" style="height:30px;">
-                        </Col>
-                    </Row>
-                </div> -->
-                <div class="layout-breadcrumb">
-                    <!-- <Breadcrumb>
+                <!-- <div class="layout-breadcrumb">
+                    <Breadcrumb>
                         <Breadcrumb-item href="#">首页</Breadcrumb-item>
                         <Breadcrumb-item href="#">{{BreadcrumbText}}</Breadcrumb-item>
                         <Breadcrumb-item>{{SubBreadcrumbText}}</Breadcrumb-item>
-                    </Breadcrumb> -->
-                </div>
+                    </Breadcrumb>
+                </div> -->
                 <div class="layout-content">
                     <div class="layout-content-main">
                         <div style="border-bottom:solid 1px #DCD9D9;padding:10px 0;margin-bottom:15px;">{{SubBreadcrumbText}}</div>
@@ -94,21 +55,22 @@
                     </div>
                 </div>
                 <div class="layout-copy">
-                    <span>CopyRight(C)TOP-LINK 智能制造2025</span>
-                    <span style="margin-left:25px;">深圳市拓联智能信息技术有限公司</span>
+                    <span >CopyRight@topstar 智能制造2025</span>
+                    <span style="margin-left:25px;">深圳拓斯达</span>
                 </div>
             </i-col>
         </Row>
     </div>
 </template>
 <script>
+    import {logOut,getConfig} from '@/api/getData'
     export default {
         data(){
             return{
                 routerMenu:{
-                    factoryDevManage:[
+                    DevManage:[
                       {
-                        path:'/DevList',
+                        path:'/devList',
                         text:'机器列表',
                         isActive:false
                       },
@@ -132,26 +94,21 @@
                         text:'用户信息',
                         isActive:false
                       }
-                    ],
-                    reportManage:[{
-                         path:'/report',
-                         text:'报表管理',
-                         isActive:false
-                    }]
+                    ]
                 },
                 BreadcrumbText:'生产设备管理',
-                SubBreadcrumbText:'工厂管理',
+                SubBreadcrumbText:'机器列表',
             }
         },
         methods:{
-            router:function(name){
+            setRouter(name){
                 let str=name.split(''),
                     item0=parseInt(str.shift()),
                     item1=parseInt(str.pop());
                 if(item0==1){
-                    this.$router.push(this.routerMenu.factoryDevManage[item1-1].path);
+                    this.$router.push(this.routerMenu.DevManage[item1-1].path);
                     this.BreadcrumbText='生产设备管理';
-                    this.SubBreadcrumbText=this.routerMenu.factoryDevManage[item1-1].text;
+                    this.SubBreadcrumbText=this.routerMenu.DevManage[item1-1].text;
                 }
                 else{
                     this.$router.push(this.routerMenu.reportManage[item1-1].path);
@@ -163,12 +120,21 @@
             accountOper(value){
                 if(value=="logOut"){
                     sessionStorage.clear();
-                    window.location.href="http://user.topstarltd.com/login/login.html?redirect=http://iec.topstarltd.com";
+                    /*window.location.href="http://user.topstarltd.com/login/login.html?redirect=http://iec.topstarltd.com";*/
+                    window.location.href="http://iec.topstarltd.com/Handler_LogOut_Do.ashx";
+                    // logOut({}).then(data=>console.log(data),err=>console.log(err));
+                    // window.location.reload();
                 }
-            }
+                if(value=="userInfo"){
+                    // this.$router.push('userInfo');
+                    this.$refs.nav.currentActiveName='1-5';
+                    this.$refs.nav.$emit('on-select','1-5');
+                    // console.log(this.$refs.nav.$emit('on-select','1-5'));
+                }
+            },
         },
         created(){
-            this.$router.push(this.routerMenu.factoryDevManage[0].path);
+            this.$router.push(this.routerMenu.DevManage[0].path);
         },
         beforeCreate(){
             let userID=GetQueryString("useruuid");
@@ -177,7 +143,8 @@
             if((userID==null||userName==null)&&
                 (sessionStorage.userID==undefined||sessionStorage.userName==undefined)
                 ){
-               window.location.href="http://user.topstarltd.com/login/login.html?redirect=http://iec.topstarltd.com";
+               /*window.location.href="http://user.topstarltd.com/login/login.html?redirect=http://localhost:8080";*/
+               /*window.location.href="http://user.topstarltd.com/login/login.html?redirect=http://iec.topstarltd.com";*/
             }
             else if(sessionStorage.userID==undefined||sessionStorage.userName==undefined){
                 sessionStorage.setItem("userID",userID);
@@ -192,7 +159,7 @@
     }
 </script>
 <style>
-html,body{height: 100%;}
+    html,body{height: 100%;}
     .layout{
         border: 1px solid #d7dde4;
         background: #f5f7f9;

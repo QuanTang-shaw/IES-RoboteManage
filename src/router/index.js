@@ -2,8 +2,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 Vue.use(Router)
-const DevManage = r => require.ensure([], () => r(require('@/components/DevManage')), 'DevManage');
-const DevList = r => require.ensure([], () => r(require('@/components/DevList')), 'DevList');
+const devManage = r => require.ensure([], () => r(require('@/components/DevManage')), 'DevManage');
+const devList = r => require.ensure([], () => r(require('@/components/DevList')), 'DevList');
 const monitor = r => require.ensure([], () => r(require('@/components/Monitor')), 'monitor');
 const customerList = r => require.ensure([], () => r(require('@/components/customerList')), 'customerList');
 const orderManage = r => require.ensure([], () => r(require('@/components/orderManage')), 'orderManage');
@@ -18,11 +18,11 @@ export default new Router({
     {
       path: '/',
       name: 'plantMg',
-      component:DevManage,
+      component:devManage,
       children:[
         {
-          path:'DevList',
-          component:DevList
+          path:'devList',
+          component:devList
         },
         {
           path:'monitor/:devID',

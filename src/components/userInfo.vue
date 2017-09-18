@@ -3,10 +3,10 @@
 		<!-- <div class="cover"></div> -->
 		<Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
 	        <FormItem label="用户ID" prop="name">
-	            <Input disabled v-model="formValidate.userID" placeholder="请输入姓名"></Input>
+	            <Input disabled v-model="formValidate.userID" placeholder="请输入用户ID"></Input>
 	        </FormItem>
 	        <FormItem  label="用户名" prop="name">
-	            <Input disabled v-model="formValidate.userName" placeholder="请输入姓名"></Input>
+	            <Input disabled v-model="formValidate.userName" placeholder="请输入用户名"></Input>
 	        </FormItem>
 	        <FormItem label="手机" prop="MobileNumber">
 	            <Input v-model="formValidate.MobileNumber" placeholder="请输入姓名"></Input>

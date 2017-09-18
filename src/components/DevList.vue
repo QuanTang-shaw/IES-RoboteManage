@@ -186,12 +186,12 @@
       return {
         endTime:'',
         modal1: false,
-        chosenCustomer:'0',
+        chosenCustomer:'-1',
         initSelect:{
-          value:"0",
+          value:"-1",
           label:"全部客户"
         },
-        CustomerID:0,
+        CustomerID:-1,
         modal2: false,
         Locking:false,
         currentPage:0,
@@ -213,7 +213,7 @@
                             return h('div', [
                                 h('img',{
                                       attrs:{
-                                        src:`http://iec.top-link.me${params.row.picPath}`
+                                        src:`${params.row.picPath}`
                                       },
                                       style:{
                                         height:'80px',
@@ -283,11 +283,14 @@
                         align: 'center',
                         render: (h, params) => {
                           // console.log(params);
+                          let disableBTN=false;
+                          if(params.row.status==1)disableBTN=true;
                             return h('div', [
                                 h('Button', {
                                     props: {
                                         type: 'primary',
                                         // size: 'small',
+                                        disabled:disableBTN,
                                         shape:"circle",
                                         icon:'locked'
                                     },
@@ -309,6 +312,7 @@
                                     props: {
                                         type: 'success',
                                         // size: 'small',
+                                        disabled:disableBTN,
                                         shape:"circle",
                                         icon:"monitor"
                                     },
@@ -452,6 +456,11 @@
               startTime=`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
         let DevStatus=0;
         // console.log(this.devOper)
+        if(this.endTime==""){
+          // alert("请选择时间");
+          this.$Message.error("提交失败,请选择时间!");
+          return;
+        }
         if(this.Locking){
           DevStatus=3;
         }
@@ -465,7 +474,7 @@
           dtDeviceActiveDateTimeE: this.endTime
         });
         this.initDevData();
-        this.$Message.info('点击了确定');
+        this.$Message.info('修改成功!');
       },
       LockingCancel () {
         this.$Message.info('点击了取消');
@@ -487,14 +496,18 @@
         }
       },
       async initDevData(){
+        this.$Loading.start();
         const list=await MachineList({
                 nPageIndex:parseInt(sessionStorage.getItem('devCurPage')),
                 nPageSize: this.pageSize,
                 strKeyWord: "",
                 uCustomerUUID: this.CustomerID,
-                uLocationUUID: 0,
-                uProductUUID: 0
+                uLocationUUID: -1,
+                uProductUUID: -1,
+                nDeviceStatus: -1,
+                uDeviceUUID: -1
               });
+        this.$Loading.finish();
         this.DevData=[];
         if(list.obj.hasOwnProperty('objectlist')){
           list.obj.objectlist.forEach((ele,index)=>{

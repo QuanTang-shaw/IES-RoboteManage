@@ -7,7 +7,7 @@
 		    @on-cancel="cancel">
 		    <Alert type="warning" show-icon>
 		      <template slot="desc">
-		        删除客户后,该客户所属的所有设备等信息都将删除哦
+		        删除客户后,该客户所属的订单设备等信息都将删除且无法恢复
 		      </template>
 		      您确定要删除客户<span class="warmTitle" style="color:#FA0E0E;font-weight: bolder;">{{deletePopContent}}</span>吗?
 		    </Alert>
@@ -33,12 +33,12 @@
 		            <Form-item label="地址" prop="address">
 		                <Input v-model="formValidate.address" placeholder="请输入客户地址"></Input>
 		            </Form-item>
-		            <Form-item label="LOGO" >
+		            <!-- <Form-item label="LOGO" >
 		              <div class="fileUpload">
 		                <img src="../assets/plant1.jpg" style="height:120px;" alt="图片" @click="upPic">
 		                <input type="file" style="display:none;">
 		              </div>
-		            </Form-item>
+		            </Form-item> -->
 		            <Form-item>
 		                <Button type="ghost" @click="close" >取消</Button>
 		                <Button type="primary" @click="handleSubmit('formValidate')" style="margin-left: 8px">提交</Button>
@@ -97,7 +97,7 @@
 			                     width: 60,
 			                     align: 'center'
 			                 },
-			                {
+			                /*{
 			                    title: '图片',
 			                    key: 'name',
 			                    render: (h, params) => {
@@ -113,7 +113,7 @@
 			                                })
 			                        ]);
 			                    }
-			                },
+			                },*/
 			                {
 			                  title:'名称',
 			                  key:'name'

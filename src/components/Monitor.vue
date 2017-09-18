@@ -37,12 +37,13 @@
 	               <img src="../pic/Manipulator1.jpg" alt="" style="height:80px;">
 	             </Col>
 	             <Col span="6" style="border:solid 0px;font-size:15px;">
-	                <p><strong>设备名称:</strong>{{devOper.model}}</p>
-	                <p><strong>设备型号:</strong>{{devOper.numbering}}</p>
-	                <p><strong>设备编号:</strong>234</p>
+	                <p><strong>设备名称:</strong>{{devOper.name}}</p>
+	                <p><strong>设备型号:</strong>{{devOper.model}}</p>
+	                <p><strong>设备编号:</strong>{{devOper.numbering}}</p>
 	             </Col>
 	             <Col span="6" style="border:solid 0px;">
-	              <Button type="info" >运行中</Button>
+	              <Button type="info" v-if="devOper.status==3">运行中</Button>
+	              <Button v-else="devOper.status==2">停止中</Button>
 	             </Col>
 	             <Col span="6" style="border:solid 0px;">
 	              <Button type="primary" shape="circle" icon="locked " @click="SubRemoteUnlock">远程锁机</Button>
@@ -153,7 +154,11 @@
 			  const date=new Date(),
 			        startTime=`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
 			  let DevStatus=0;
-			  console.log(this.devOper)
+			  // console.log(this.devOper);
+			  if(this.endTime==""){
+			    this.$Message.error("提交失败,请选择时间!");
+			    return;
+			  }
 			  if(this.Locking){
 			    DevStatus=3;
 			  }
@@ -167,7 +172,7 @@
 			    dtDeviceActiveDateTimeE: this.endTime
 			  });
 			  this.initDevData();
-			  this.$Message.info('点击了确定');
+			  this.$Message.info('修改成功!');
 			},
 			LockingCancel () {
 			  this.$Message.info('点击了取消');
@@ -197,11 +202,12 @@
 				const list=await MachineList({
 				        nPageIndex: 0,
 				        nPageSize: 0,
+				        uDeviceUUID:this.$route.params.devID,
 				        strKeyWord: "",
-				        uCustomerUUID: 0,
-				        uLocationUUID: 0,
-				        uProductUUID: 0,
-				        uDeviceUUID:this.$route.params.devID
+				        uCustomerUUID: -1,
+				        uLocationUUID: -1,
+				        uProductUUID: -1,
+				        nDeviceStatus: -1
 				      });
 				console.log(list);
 				this.DevData=[];
@@ -212,7 +218,7 @@
 					const temp=list.obj.objectlist[0];
 				    this.devOper={
 				      name:temp.strProductName_cn,
-				      numbering:temp.strDeviceSN,
+				      numbering:temp.strMachineSN,
 				      model:temp.strProductModel,
 				      status:temp.nDeviceStatus,
 				      customer:temp.strCustomerName,

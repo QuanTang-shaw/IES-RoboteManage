@@ -2,8 +2,8 @@
 // import {exec_getData as get} from '@/fetch/fetch'
 	const get=function (str,op,obj) {
 		var promise=new Promise(function (resolve,reject) {
-			var url =`http://iec.top-link.me/${str}`,
-			// var url =`http://iec.topstarltd.com/${str}`,
+			// var url =`http://iec.top-link.me/${str}`,
+			var url =`http://iec.topstarltd.com/${str}`,
 			// var url =`http://localhost:8810/${str}`,
 
 				req = new TRequest();
@@ -41,6 +41,13 @@
 		});
 		return promise;
 	}*/
+	export const logOut = async  function (obj){
+		var result = await get(
+	      "Handler_LogOut_Do.ashx",
+	      " ",
+	      obj);
+		 return result;
+	}
 
 
 	export const getConfig = async  function (obj){
@@ -215,7 +222,7 @@
 	    	    },
 	    datasource: {
 	      mqtt: {
-	        server: "mqtt://iec.topstarltd.com",
+	        server: "mqtt://iec.top-link.me",
 	        port : 9011,
 	        topic: "topstarltd/iec/app/10001",
 	      }

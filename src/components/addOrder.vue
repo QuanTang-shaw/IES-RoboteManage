@@ -11,8 +11,8 @@
 			             <Option :value="customer.value" :key="customer.value" v-for="customer in customerList">{{customer.label}}</Option>
 			         </Select>
 			     </FormItem>
-			     <FormItem label="订单金额" prop="sum">
-			         <Input v-model="formValidate.sum" placeholder="请输入订单金额"></Input>
+			     <FormItem label="订单金额" >
+			         <Input disabled v-model="formValidate.sum" placeholder="请输入订单金额"></Input>
 			     </FormItem>
 			     <FormItem label="设备" prop="targetOrder">
 			        <Transfer
@@ -47,7 +47,7 @@
                 transferTitle:['待售设备','目的订单'],
                 formValidate: {
                     customer: '',
-                    sum: '',
+                    sum: 0,
                     city: '',
                     targetOrder: [],
                     desc: ''
@@ -111,14 +111,17 @@
         	handleSubmit (name) {
                 this.$refs[name].validate((valid) => {
                     if (valid) {
-                        this.$Message.success('提交成功!');
-                        console.log(this.formValidate.targetOrder)
+                        // console.log(this.formValidate.targetOrder);
                         AddOrder({
-                        	uCustomerUUID : this.formValidate.customer  , // 客户的UUID
-                	        uOrderSellerUserUUID : 0 , // 销售员UUID, 默认为0
-                	        fOrderTotalAmmount : this.formValidate.sum , // 订单金额, 默认为0
-                	        strOrderNote : this.formValidate.desc, // 备注信息
-                	        lstMachineUUID : this.formValidate.targetOrder // 当前订单下的uMachineUUID
+                            uCustomerUUID : this.formValidate.customer  , // 客户的UUID
+                            uOrderSellerUserUUID : 0 , // 销售员UUID, 默认为0
+                            fOrderTotalAmmount : this.formValidate.sum , // 订单金额, 默认为0
+                            strOrderNote : this.formValidate.desc, // 备注信息
+                            lstMachineUUID : this.formValidate.targetOrder // 当前订单下的uMachineUUID
+                        }).
+                        then(()=>{
+                            this.$router.push("orderList");
+                            this.$Message.success('提交成功!');
                         });
                     }
                     else {
@@ -139,10 +142,11 @@
 		          list.obj.objectlist.forEach((ele, index)=> {
 		            this.customerList.push({
 		            	label:ele.strCustomerName,
-		            	value:ele.uCustomerUUID,
+		            	value:ele.uCustomerUUID.toString(),
 		            });
 		          });
 		        }
+                // console.log(list);
 	      	},
 	      	async initCategoryData(){
 	      		const list=await productCategory({
@@ -154,23 +158,22 @@
             async getForSale(){
                 const list=await MachineList({
                     nPageIndex: 0,
-                    nPageSize: 0,
+                    nPageSize: -1,
                     strKeyWord: "",
-                    uCustomerUUID: 0,
-                    uLocationUUID: 0,
-                    uProductUUID: 0,
-                    nDeviceStatus:1
+                    uCustomerUUID: -1,
+                    uLocationUUID: -1,
+                    uProductUUID: -1,
+                    nDeviceStatus: 1,
+                    uDeviceUUID:-1
               });
               console.log(list);
               // console.log(list.obj.objectlist);
               if(list.obj.hasOwnProperty('objectlist')){
                   this.sourceData=[];
                   list.obj.objectlist.forEach((ele, index)=>{
-                  console.log(index)
-                      // statements
                       this.sourceData.push({
                           key:ele.uMachineUUID,
-                          label:ele.strDeviceSN,
+                          label:ele.strMachineSN,
                           // description: '设备' + i + '的描述信息',
                       });
                   });

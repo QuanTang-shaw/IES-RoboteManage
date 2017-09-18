@@ -65,7 +65,17 @@
                     {
                         title: '订单状态',
                         key: 'status',
-                        width:120
+                        width:120,
+                        render:(h, params)=>{
+                            return h('div', [
+                              h('Button', {
+                                  props: {
+                                      type: 'info',
+                                      size: 'small',
+                                  }
+                              },`正常`)
+                          ]);
+                        }
                     },
                     {
                         title: '订单创建时间',
@@ -227,7 +237,7 @@
 	        },
 	        addOrder(){
 	        	// this.modal1=true;
-                this.$router.push("addOrder")
+                this.$router.push("addOrder");
 	        },
 	        orderDetail(params){
 	        	// console.log(params);

@@ -142,8 +142,11 @@
 				        nPageIndex: this.currentPage,
 				        nPageSize: 7,
 				        strKeyWord: "",
-				        uLocationUUID: 0,
-				        uProductUUID: 0
+				        uCustomerUUID: -1,
+				        uLocationUUID: -1,
+				        uProductUUID: -1,
+				        nDeviceStatus: -1,
+				        uDeviceUUID: -1
 				    });
 				console.log(list)
 				this.totalCount=list.obj.totalcount

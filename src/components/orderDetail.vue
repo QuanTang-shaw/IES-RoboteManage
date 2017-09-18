@@ -27,11 +27,11 @@
 		      </Form-item>
 		    </Form>
 		</Modal>
-		<Breadcrumb style="border-bottom:solid 0px #E7E4E4;">
+		<Breadcrumb separator="<b class='demo-breadcrumb-separator'>=></b>" style="border-bottom:solid 0px #E7E4E4;">
 		  <Breadcrumb-item href="/orderManage/orderList">订单列表</Breadcrumb-item>
 		  <Breadcrumb-item>订单详情</Breadcrumb-item>
 		</Breadcrumb>
-		<div>
+		<div style="margin-top:20px;">
 			<Table border :columns="orderDevcolumns" :data="orderDevData"></Table>
 		</div>
 	</div>
@@ -58,7 +58,7 @@
 					        return h('div', [
 					            h('img',{
 					                  attrs:{
-					                    // src:pic
+					                    src:`${params.row.picPath}`
 					                  },
 					                  style:{
 					                    height:'80px',
@@ -85,7 +85,7 @@
 					  title:'运行状态',
 					  key:'status',
 					  render: (h, params) => {
-					    if(params.row.status==1){
+					    if(params.row.status==2){
 					      return h('div', [
 					          h('Button', {
 					              props: {
@@ -95,7 +95,7 @@
 					          },`停止中`)
 					      ]);
 					    }
-					    else if(params.row.status==2){
+					    else if(params.row.status==3){
 					      return h('div', [
 					          h('Button', {
 					              props: {
@@ -200,8 +200,9 @@
 					  let obj={};
 				      this.orderDevData.push({
 				      	devID:ele.uDeviceUUID,
+			            picPath:ele.strProductImage,
 					    name:ele.strProductName_cn,
-					    numbering:ele.strDeviceSN,
+					    numbering:ele.strMachineSN,
 					    model:ele.strProductModel,
 					    status:ele.nDeviceStatus,
 					    customer:ele.strCustomerName,
@@ -216,3 +217,9 @@
 		}
 	}
 </script>
+<style>
+	.demo-breadcrumb-separator{
+        color: #ff5500;
+        padding: 0 5px;
+    }
+</style>
