@@ -251,34 +251,37 @@
 				//连接服务器
 				// const client = mqtt.connect('mqtt://iec.topstarltd.com:9011');
 				const client = mqtt.connect(server+":"+port);
-				// console.log(topic);
+				console.log(server);
 				//订阅主题
 				client.on('connect', function() {
 				  client.subscribe(topic);
 				});
 				client.on("message", function(topic, payload) {
+					console.log('==================',payload);
 				  const MqttData=JSON.parse(payload);
 				  console.log(MqttData);
 				  if(MqttData.hasOwnProperty('data')){
 				  	for (let key in MqttData.data) {
 				  		// statement
-				  		if(key=="axis_angle"){
+				  		if(key=="axis_pos"){
 				  			// console.log(key);
-				  			$('#'+"svg_txtValueX").html(MqttData.data.axis_angle[0].toFixed(1));
-				  			$('#'+"svg_txtValueY").html(MqttData.data.axis_angle[1].toFixed(1));
-				  			$('#'+"svg_txtValueZ").html(MqttData.data.axis_angle[2].toFixed(1));
-				  			$('#'+"svg_txtValueRx").html(MqttData.data.axis_angle[3].toFixed(1));
-				  			$('#'+"svg_txtValueRy").html(MqttData.data.axis_angle[4].toFixed(1));
-				  			$('#'+"svg_txtValueRz").html(MqttData.data.axis_angle[5].toFixed(1));
+				  			$('#'+"svg_txtValueX").html(MqttData.data.axis_pos[0].toFixed(1));
+				  			$('#'+"svg_txtValueY").html(MqttData.data.axis_pos[1].toFixed(1));
+				  			$('#'+"svg_txtValueZ").html(MqttData.data.axis_pos[2].toFixed(1));
+				  			$('#'+"svg_txtValueRx").html(MqttData.data.axis_pos[3].toFixed(1));
+				  			$('#'+"svg_txtValueRy").html(MqttData.data.axis_pos[4].toFixed(1));
+				  			$('#'+"svg_txtValueRz").html(MqttData.data.axis_pos[5].toFixed(1));
 				  		}
 				  		if((key=="sys_gpi"||key=="sys_gpo")){
 				  			let GPIO=key=="sys_gpi"?MqttData.data.sys_gpi:MqttData.data.sys_gpo;
   						  	// let GPIO=MqttData.data.sys_gpi;
+  						  	let countIO=15;
   						  for (let n = 0; n < 16; n++) {
   			                  let light = (0 == (GPIO & (1 << n)) ? 0 : 1);
   			                  let keyId = key == 'sys_gpi' ? 'svg_gpi' : 'svg_gpo';
-  			                  light == 0 ? $('#' + keyId + '_' + n).attr({"xlink:href": require('../assets/signalLamp_stop.png')}) :
-  			                  $('#' + keyId + '_' + n).attr({"xlink:href": require('../assets/signalLamp.png')});
+  			                  light == 0 ? $('#' + keyId + '_' + countIO).attr({"xlink:href": require('../assets/signalLamp_stop.png')}) :
+  			                  $('#' + keyId + '_' + countIO).attr({"xlink:href": require('../assets/signalLamp.png')});
+  			                  countIO--;
   			                }
 				  		}
 				  		$('#'+"svg_txtMachineModel").html(MqttData.data.model);
@@ -291,7 +294,7 @@
 				  		$('#'+"svg_txtRunSpeed").html(MqttData.data.run_speed.toFixed(1));
 				  	}
 				  }
-				  client.end();
+				  // client.end();
 				  // {client.end()}
 				});
 			}

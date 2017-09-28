@@ -180,7 +180,7 @@
 <script>
   import pic from '@/pic/Manipulator1.jpg'
   import {CustomerList,MachineList,MachineLocking,getConfig} from '@/api/getData'
-  import mqtt from 'mqtt'
+  // import mqtt from 'mqtt'
   export default {
     data () {
       return {
@@ -552,7 +552,7 @@
       this.initDevData();
     },
     beforeCreate(){
-      const client = mqtt.connect('mqtt://iec.topstarltd.com:9011');
+      /*const client = mqtt.connect('mqtt://iec.topstarltd.com:9011');
       client.on('connect', function() {
         client.subscribe('topstarltd/iec/app/10001');
         // client.publish('topstarltd/iec/app/10001', 'test');
@@ -577,7 +577,7 @@
         // console.log(obj);
         // cb(JSON.parse(payload))
         // {client.end()}
-      });
+      });*/
       /*getConfig({
         uMachineUUID : 0,
         uAppUUID : 0

@@ -1,6 +1,6 @@
 
 // import {exec_getData as get} from '@/fetch/fetch'
-	const get=function (str,op,obj) {
+	/*const get=function (str,op,obj) {
 		var promise=new Promise(function (resolve,reject) {
 			// var url =`http://iec.top-link.me/${str}`,
 			var url =`http://iec.topstarltd.com/${str}`,
@@ -20,7 +20,7 @@
 			    });
 		});
 		return promise;
-	}
+	}*/
 
 	/*export const getConfig = async  function (obj){
 		var promise=new Promise(function (resolve,reject) {
@@ -208,7 +208,7 @@
 	$('#'+"svg_txtErrorCount").html(obj.fault_count);*/
 
 
-	const config=[
+	/*const config=[
 	  //第一台机器配置
 	  {
 	   	info: {
@@ -296,5 +296,5 @@
 	          }
 	      ]
 	  }
-	];
+	];*/
 

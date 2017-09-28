@@ -1,4 +1,4 @@
-<template>
++<template>
     <div class="layout">
         <Row class="layout-header" type="flex" justify="center" align="middle">
             <Col span="4" style="border:solid 0px;">
@@ -55,8 +55,8 @@
                     </div>
                 </div>
                 <div class="layout-copy">
-                    <span >CopyRight@topstar 智能制造2025</span>
-                    <span style="margin-left:25px;">深圳拓斯达</span>
+                    <span >CopyRight &copy; TOPSTAR</span>
+                    <span style="margin-left:25px;">拓斯达科技</span>
                 </div>
             </i-col>
         </Row>

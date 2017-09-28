@@ -36,7 +36,7 @@ new Vue({
   data:{
   	 Bus: new Vue()
   }
-  // render: h => h(iview)
+//   render: h => h(iview)
 })
 
 sessionStorage.setItem("devCurPage",0);
