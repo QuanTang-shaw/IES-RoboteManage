@@ -346,24 +346,6 @@
             title:'报警编号',
             key:'number',
             width:150,
-            /*filters: [
-              {
-                label: '电机过流',
-                value: 1
-              },
-              {
-                label: '跟随错误',
-                value: 2
-              }
-            ],
-            // filterMultiple: false,
-            filterMethod (value, row) {
-                if (value === 1) {
-                    return row.number == 'err 011';
-                } else if (value === 2) {
-                    return row.number == 'err 009';
-                }
-            }*/
           },
           {
             title:'报警内容',
@@ -543,45 +525,12 @@
             this.customerList.push(obj);
           });
         }
-        // console.log(this.customerList);
       }
     },
     created(){
       this.currentPage=parseInt(sessionStorage.getItem('devCurPage'))+1;
       this.initCustomerData();
       this.initDevData();
-    },
-    beforeCreate(){
-      /*const client = mqtt.connect('mqtt://iec.topstarltd.com:9011');
-      client.on('connect', function() {
-        client.subscribe('topstarltd/iec/app/10001');
-        // client.publish('topstarltd/iec/app/10001', 'test');
-      });
-      let str="topstarltd/iec/app/10001";
-      client.on("message", function(str, payload) {
-        // console.log(JSON.parse(payload));
-        let obj=JSON.parse(payload).data;
-        // $('#'+item.id).attr(item.attr, item.render(mqdat[_key]))
-        $('#'+"svg_txtValueX").html(obj.axis_angle[0].toFixed(1));
-        $('#'+"svg_txtValueY").html(obj.axis_angle[1].toFixed(1));
-        $('#'+"svg_txtValueZ").html(obj.axis_angle[2].toFixed(1));
-        $('#'+"svg_txtValueRx").html(obj.axis_angle[3].toFixed(1));
-        $('#'+"svg_txtValueRy").html(obj.axis_angle[4].toFixed(1));
-        $('#'+"svg_txtValueRz").html(obj.axis_angle[5].toFixed(1));
-        $('#'+"svg_txtCycleCount").html(obj.cycle_count);
-        $('#'+"svg_txtCyclePeriod").html(obj.cycle_period.toFixed(1));
-        $('#'+"svg_txtPowerOnTime").html(Math.trunc(obj.total_time_power_on));
-        $('#'+"svg_txtRunTime").html(Math.trunc(obj.total_time_run));
-        $('#'+"svg_txtErrorCount").html(obj.fault_count);
-        // $('#'+"svg_txtCycleCount").html(obj.cycle_count);
-        // console.log(obj);
-        // cb(JSON.parse(payload))
-        // {client.end()}
-      });*/
-      /*getConfig({
-        uMachineUUID : 0,
-        uAppUUID : 0
-      }).then(data=>console.log(data));*/
     }
   }
 </script>
